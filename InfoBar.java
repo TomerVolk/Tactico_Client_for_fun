@@ -11,6 +11,7 @@ import client.Board.Status;
  */
 public class InfoBar extends JPanel{
 	private static final long serialVersionUID = 1L;
+	int mark;
 	/**
 	 * the board of this player
 	 */
@@ -39,7 +40,7 @@ public class InfoBar extends JPanel{
 		super.paintComponent(g);
 		g.setFont(new Font(Font.SANS_SERIF, Font.BOLD, 30));
 		if(b.status== Status.flag) g.drawString("place your flag", 10, 40);
-		if(b.status== Status.org) g.drawString("organize your tools", 10, 40);
+		if(b.status== Status.org) g.drawString("organize your tools, you clicked on "+mark, 10, 40);
 		if(YourFight==-1||OpponentFight==-1) return;
 		g.drawString("Your Tool was: "+YourFight, 50, 45);
 		g.drawString("Opponent Tool was: "+OpponentFight, 500, 45);

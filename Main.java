@@ -1,4 +1,4 @@
-package network;
+package client;
 
 /**
  * the class that should be ran

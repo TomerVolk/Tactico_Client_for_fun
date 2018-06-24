@@ -1,4 +1,4 @@
-package network;
+package client;
 
 import java.awt.*;
 import javax.swing.*;
@@ -33,7 +33,7 @@ public class SideBar extends JPanel{
 	 */
 	public void paintComponent(Graphics g){
 		super.paintComponent(g);
-		Player tool;
+		Point[] tool;
 		if(isMe) {
 			g.setColor(Color.blue);
 			tool=b.me;
@@ -43,10 +43,20 @@ public class SideBar extends JPanel{
 			tool=b.opponent;
 		}
 		g.setFont(new Font(null, 0, 25));
+		int[] dead= deadOfType(tool);
 		for(int i=0;i<11;i++){
-			g.drawImage(Tool.tool[i].getImage(), 0, this.getHeight()/11*i,  this.getWidth(), this.getHeight()/11, null);
-			g.drawString(HelpFunc.DeadOfType(tool, i)+"", 30, this.getHeight()/11*(i+1)-15);
+			g.drawImage(Board.tool[i].getImage(), 0, this.getHeight()/11*i,  this.getWidth(), this.getHeight()/11, null);
+			g.drawString(dead[i]+"", 30, this.getHeight()/11*(i+1)-15);
 			g.drawLine(0, this.getHeight()/11*(i+1), this.getWidth(),  this.getHeight()/11*(i+1));
 		}
+	}
+	public int[] deadOfType(Point[] player){
+		int[] ans=new int[11];
+		for(int i=0;i<40;i++){
+			if(!player[i].equals(new Point(-1,-1))){
+				ans[Board.converter[i]]++;
+			}
+		}
+		return ans;
 	}
 }

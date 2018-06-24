@@ -47,6 +47,7 @@ public class Board extends JPanel implements MouseListener,WindowListener{
 	 * The Current player
 	 */
 	Point [] me= new Point[40];
+	static int [] converter;
 	/**
 	 * The Class responsible of the connection to the server
 	 */
@@ -56,6 +57,8 @@ public class Board extends JPanel implements MouseListener,WindowListener{
 	 */
 	int id;
 	int turn;
+	static ImageIcon tool[]= new ImageIcon[12];
+	static ImageIcon toolRed[]= new ImageIcon[12];
 	/**
 	 * the constructor of the Class, that actually starts the game
 	 * gives initial values to all fields and builds initial graphics
@@ -76,11 +79,46 @@ public class Board extends JPanel implements MouseListener,WindowListener{
 			leftBar=new SideBar(this, false);
 			this.add(leftBar, BorderLayout.EAST);
 		}
+		for(int i=0;i<12;i++){
+			tool[i]=new ImageIcon("pic/ "+i+".PNG");
+			toolRed[i]=new ImageIcon("pic/ "+i+"_1.PNG");
+		}
+		
 		frame.setLayout(new BorderLayout());
 		frame.add(this, BorderLayout.CENTER);
 		frame.setVisible(true);
 		frame.addWindowListener(this);
 		frame.addMouseListener(this);
+	}
+	public void startConverter(){
+		converter[0]=  (11); //creates the flag
+		for(int i=1;i<7;i++){		//creates the bombs
+			converter[i]= (0);
+		}
+		converter[7]=  (1);	//creates the spy
+		for(int i=8;i<16;i++){	//creates the level 2
+			converter[i]= (2);	
+		}
+		for(int i=16;i<21;i++){	//creates the level 3
+			converter[i]= (3);	
+		}
+		for(int i=21;i<25;i++){//create level 4
+			converter[i]= (4);	
+		}
+		for(int i=25;i<29;i++){//creates level 5
+			converter[i]= (5);	
+		}
+		for(int i=29;i<33;i++){//creates level 6
+			converter[i]= (6);	
+		}
+		for(int i=33;i<36;i++){//creates level 7
+			converter[i]= (7);	
+		}
+		for(int i=36;i<38;i++){//creates level 8
+			converter[i]= (8);	
+		}
+		converter[38]=  (9); //creates level 9
+		converter[39]= (10); //creates level 10
 	}
 	/**
 	 * gets the initial data from the server

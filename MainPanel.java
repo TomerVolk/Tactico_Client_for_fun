@@ -1,7 +1,7 @@
-package network;
+package client;
 import java.awt.*;
 import javax.swing.JPanel;
-import network.Game.Status;
+import client.Board.Status;
 /**
  * the panel where the board is, and where the tools are
  * @author tomer
@@ -12,7 +12,7 @@ public class MainPanel extends JPanel{
 	 * the frame of the board
 	 */
 	private Board board;
-
+	int mark;
 	/**
 	 * the constructor, initiates the board field and the size and background
 	 * @param b
@@ -27,20 +27,20 @@ public class MainPanel extends JPanel{
 	 */
 	public void paintComponent(Graphics g){
 		super.paintComponent(g);
-		if(board.game.status==Status.OpponentWin) {
+		if(board.status==Status.opponentWin) {
 			g.setFont(new Font(Font.BOLD+"", Font.BOLD, 200));
 			g.drawString("You \n Lost", 500, 500);
 			return;
 		}
-		if(board.game.status==Status.YouWin) {
+		if(board.status==Status.youWin) {
 			g.setFont(new Font(Font.BOLD+"", Font.BOLD, 200));
 			g.drawString("You \n Won", 500, 500);
 			return;
 		}
 		for(int i=0;i<40;i++){
-			Tool[] OTools=board.opponent.getTools();
-			if (!OTools[i].isDead()) {
-				Point p= OTools[i].getPlace();
+			Point[] OTools=board.opponent;
+			if (!OTools[i].equals(new Point(-1,-1))) {
+				Point p= OTools[i];
 				g.setColor(Color.red);
 				g.fillRect(this.getWidth()/10*(int) p.getX(), this.getHeight()/10*(int)p.getY(),  this.getWidth()/10, this.getHeight()/10);
 				g.setColor(Color.BLACK);
@@ -53,16 +53,24 @@ public class MainPanel extends JPanel{
 			g.drawLine(0, this.getHeight()/10*i, this.getWidth(), this.getHeight()*i/10);
 		}
 		for(int i=0;i<40;i++){
-			Tool[] myTools=board.me.getTools();
-			if (!myTools[i].isDead()&& i!=board.game.typeClicked) {
-				Point p= myTools[i].getPlace();
-				g.drawImage(Tool.tool[myTools[i].getType()].getImage(), this.getWidth()/10*(int) p.getX(), this.getHeight()/10*(int)p.getY(),  this.getWidth()/10, this.getHeight()/10, null);
+			Point[] myTools=board.me;
+			if (!myTools[i].equals(new Point(-1,-1))&& i!=mark) {
+				Point p= myTools[i];
+				g.drawImage(Board.tool[Board.converter[i]].getImage(), this.getWidth()/10*(int) p.getX(), this.getHeight()/10*(int)p.getY(),  this.getWidth()/10, this.getHeight()/10, null);
 			}
-			if (!myTools[i].isDead()&& i==board.game.typeClicked) {
-				Point p= myTools[i].getPlace();
-				g.drawImage(Tool.toolred[myTools[i].getType()].getImage(), this.getWidth()/10*(int) p.getX(), this.getHeight()/10*(int)p.getY(),  this.getWidth()/10, this.getHeight()/10, null);
+			if (!myTools[i].equals(new Point(-1,-1))&& i==mark) {
+				Point p= myTools[i];
+				g.drawImage(Board.toolRed[Board.converter[i]].getImage(), this.getWidth()/10*(int) p.getX(), this.getHeight()/10*(int)p.getY(),  this.getWidth()/10, this.getHeight()/10, null);
 			}
 		}
 		
+	}
+	public void updateMark(String serverString){
+		String [] data= serverString.split("##");
+		int marker= Integer.parseInt(data[1]);
+		if(board.status==Board.Status.org) board.info.mark= marker;
+		else{
+			this.mark=marker;
+		}
 	}
 }
