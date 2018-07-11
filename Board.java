@@ -47,7 +47,7 @@ public class Board extends JPanel implements MouseListener,WindowListener{
 	 * The Current player
 	 */
 	Point [] me= new Point[40];
-	static int [] converter;
+	static int [] converter= new int[40];
 	/**
 	 * The Class responsible of the connection to the server
 	 */
@@ -67,7 +67,15 @@ public class Board extends JPanel implements MouseListener,WindowListener{
 		frame=new JFrame("Tactico");
 		frame.setSize(1000, 950);
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		startConverter();
+		for(int i=0;i<40;i++){
+			me[i]=new Point(-1, -1);
+			opponent[i]=new Point(-1, -1);
+		}
 		BorderLayout layout=new BorderLayout();
+		System.out.println("starting socket");
+		client= new Communication(this);
+		System.out.println("socket is up");
 		this.setLayout(layout);
 		main=new MainPanel(this);
 		this.add(main, BorderLayout.CENTER);
@@ -80,15 +88,18 @@ public class Board extends JPanel implements MouseListener,WindowListener{
 			this.add(leftBar, BorderLayout.EAST);
 		}
 		for(int i=0;i<12;i++){
-			tool[i]=new ImageIcon("pic/ "+i+".PNG");
-			toolRed[i]=new ImageIcon("pic/ "+i+"_1.PNG");
+			tool[i]=new ImageIcon("pic/"+i+".PNG");
+			toolRed[i]=new ImageIcon("pic/"+i+"_1.PNG");
 		}
-		
 		frame.setLayout(new BorderLayout());
 		frame.add(this, BorderLayout.CENTER);
 		frame.setVisible(true);
 		frame.addWindowListener(this);
 		frame.addMouseListener(this);
+		int auto=JOptionPane.showConfirmDialog(frame, "would you like to use the auto organizer?","Auto Organizer", JOptionPane.YES_NO_OPTION);
+		if(auto== JOptionPane.YES_OPTION){
+			client.send("auto");
+		}
 	}
 	public void startConverter(){
 		converter[0]=  (11); //creates the flag
@@ -120,20 +131,34 @@ public class Board extends JPanel implements MouseListener,WindowListener{
 		converter[38]=  (9); //creates level 9
 		converter[39]= (10); //creates level 10
 	}
-	/**
-	 * gets the initial data from the server
-	 * @param turn- who's turn it is according to server
-	 * @param serverString- the data from the string
-	 */
-	public void analizeData(String serverString) {
-		// analyzing the data from server at the beginning
-		
-		turn= 1-turn;
-		if(id== turn) frame.setTitle("Your turn");
-		else frame.setTitle("Opponent turn");
+	void analizeData(String serverString) {
+		String players[]= serverString.split("Player");
+		System.out.println(players.length);
+		String[]  one_player= players[1].split("Tool");
+		for(int j=1;j<one_player.length&&j<41;j++){
+			String tool[]= one_player[j].split("##");
+			int x= Integer.parseInt(tool[0]), y= Integer.parseInt(tool[1]);
+			me[j-1]=new Point(x, y);
+		}
+		one_player= players[2].split("Tool");
+		for(int j=1;j<one_player.length&&j<41;j++){
+			String tool[]= one_player[j].split("##");
+			int x= Integer.parseInt(tool[0]), y= Integer.parseInt(tool[1]);
+			opponent[j-1]=new Point(x,9- y);
+		}
+		//turn= 1-turn;
+		if(id== turn) frame.setTitle("id = "+id+" Your turn");
+		else frame.setTitle("id = "+id+" Opponent turn");
+		repaint();
 	}
 	public void analizeOrg(String serverString){
-		
+		String[]  one_player= serverString.split("Tool");
+		for(int j=1;j<one_player.length&&j<41;j++){
+			String tool[]= one_player[j].split("##");
+			int x= Integer.parseInt(tool[0]), y= Integer.parseInt(tool[1]);
+			me[j-1]=new Point(x, y);
+		}
+		repaint();
 	}
 
 	/**

@@ -52,7 +52,7 @@ public class SideBar extends JPanel{
 	}
 	public int[] deadOfType(Point[] player){
 		int[] ans=new int[11];
-		for(int i=0;i<40;i++){
+		for(int i=1;i<40;i++){
 			if(!player[i].equals(new Point(-1,-1))){
 				ans[Board.converter[i]]++;
 			}

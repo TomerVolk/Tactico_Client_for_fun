@@ -1,5 +1,6 @@
 package client;
 import java.awt.*;
+import javax.swing.ImageIcon;
 import javax.swing.JPanel;
 import client.Board.Status;
 /**
@@ -37,6 +38,7 @@ public class MainPanel extends JPanel{
 			g.drawString("You \n Won", 500, 500);
 			return;
 		}
+		g.drawImage(new ImageIcon("pic/board.png").getImage(), 0, 0, this.getWidth(), this.getHeight(),null);
 		for(int i=0;i<40;i++){
 			Point[] OTools=board.opponent;
 			if (!OTools[i].equals(new Point(-1,-1))) {
@@ -54,12 +56,11 @@ public class MainPanel extends JPanel{
 		}
 		for(int i=0;i<40;i++){
 			Point[] myTools=board.me;
+			Point p= myTools[i];
 			if (!myTools[i].equals(new Point(-1,-1))&& i!=mark) {
-				Point p= myTools[i];
 				g.drawImage(Board.tool[Board.converter[i]].getImage(), this.getWidth()/10*(int) p.getX(), this.getHeight()/10*(int)p.getY(),  this.getWidth()/10, this.getHeight()/10, null);
 			}
 			if (!myTools[i].equals(new Point(-1,-1))&& i==mark) {
-				Point p= myTools[i];
 				g.drawImage(Board.toolRed[Board.converter[i]].getImage(), this.getWidth()/10*(int) p.getX(), this.getHeight()/10*(int)p.getY(),  this.getWidth()/10, this.getHeight()/10, null);
 			}
 		}
@@ -72,5 +73,7 @@ public class MainPanel extends JPanel{
 		else{
 			this.mark=marker;
 		}
+		System.out.println("marking "+marker);
+		this.repaint();
 	}
 }

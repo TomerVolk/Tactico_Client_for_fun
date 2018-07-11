@@ -23,15 +23,16 @@ public class Communication implements Runnable {
 	 * @param board- the main frame and all the graphics
 	 */
 	public Communication(Board board){
+		this.board=board;
 		try{ 
-			socket=new Socket("192.168.174.205",12345); 
+			socket=new Socket("",12345); 
 			out=new BufferedWriter(new OutputStreamWriter(socket.getOutputStream()));
 			read=new Thread(this);
 			read.start();
 		}
 		catch(IOException e){
 			System.out.println("failed to connect");
-			//System.exit(1);
+			System.exit(1);
 		}
 	}
 
@@ -61,15 +62,22 @@ public class Communication implements Runnable {
 
 			while ((serverString=in.readLine())!=null)
 			{
+				if(serverString.startsWith("bye")){
+					send("bye");
+					System.exit(1);
+					return;
+				}
 				if(serverString.startsWith("Wait for start")) {
 					String mar[]=serverString.split("##");
 					board.id=Integer.parseInt(mar[1]);
 					board.frame.setTitle("Waiting for start of the game");
 				}
 				if(serverString.startsWith("Player")) {
+					System.out.println("id=  "+board.id+" server sent "+serverString);
 					board.analizeData(serverString);
 				}
 				if(serverString.startsWith("Org")){
+					System.out.println("id=  "+board.id+" server sent "+serverString);
 					board.analizeOrg(serverString);
 				}
 				if(serverString.startsWith("fight")){
