@@ -83,6 +83,12 @@ public class Communication implements Runnable {
 				if(serverString.startsWith("fight")){
 					board.info.updateFight(serverString);
 				}
+				if(serverString.startsWith("mark")){
+					board.main.updateMark(serverString);
+				}
+				if(serverString.startsWith("turn")){
+					board.updateTurn(serverString);
+				}
 
 
 			}

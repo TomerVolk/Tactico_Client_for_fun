@@ -46,9 +46,13 @@ public class InfoBar extends JPanel{
 		g.drawString("Opponent Tool was: "+OpponentFight, 500, 45);
 	}
 	public void updateFight(String serverString){
+		System.out.println(serverString);
 		String [] fight= serverString.split("##");
 		YourFight= Integer.parseInt(fight[1]);
 		OpponentFight= Integer.parseInt(fight[2]);
+		YourFight= Board.converter[YourFight];
+		OpponentFight= Board.converter[OpponentFight];
+		repaint();
 	}
 		
 }

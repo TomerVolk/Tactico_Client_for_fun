@@ -73,7 +73,6 @@ public class MainPanel extends JPanel{
 		else{
 			this.mark=marker;
 		}
-		System.out.println("marking "+marker);
 		this.repaint();
 	}
 }

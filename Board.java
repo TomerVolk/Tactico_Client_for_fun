@@ -73,9 +73,7 @@ public class Board extends JPanel implements MouseListener,WindowListener{
 			opponent[i]=new Point(-1, -1);
 		}
 		BorderLayout layout=new BorderLayout();
-		System.out.println("starting socket");
 		client= new Communication(this);
-		System.out.println("socket is up");
 		this.setLayout(layout);
 		main=new MainPanel(this);
 		this.add(main, BorderLayout.CENTER);
@@ -133,23 +131,37 @@ public class Board extends JPanel implements MouseListener,WindowListener{
 	}
 	void analizeData(String serverString) {
 		String players[]= serverString.split("Player");
-		System.out.println(players.length);
-		String[]  one_player= players[1].split("Tool");
-		for(int j=1;j<one_player.length&&j<41;j++){
-			String tool[]= one_player[j].split("##");
-			int x= Integer.parseInt(tool[0]), y= Integer.parseInt(tool[1]);
-			me[j-1]=new Point(x, y);
+		if(id==0){
+			updatePlayer(players[1], me);
+			updatePlayer(players[2], opponent);
 		}
-		one_player= players[2].split("Tool");
-		for(int j=1;j<one_player.length&&j<41;j++){
-			String tool[]= one_player[j].split("##");
-			int x= Integer.parseInt(tool[0]), y= Integer.parseInt(tool[1]);
-			opponent[j-1]=new Point(x,9- y);
+		else{
+			updatePlayer(players[2], me);
+			updatePlayer(players[1], opponent);
 		}
-		//turn= 1-turn;
-		if(id== turn) frame.setTitle("id = "+id+" Your turn");
-		else frame.setTitle("id = "+id+" Opponent turn");
 		repaint();
+	}
+	private void updatePlayer(String player, Point[] p){
+		String[] one_player= player.split("Tool");
+		for(int j=1;j<one_player.length&&j<41;j++){
+			System.out.println(one_player[j]);
+			String tool[]= one_player[j].split("##");
+			int x= Integer.parseInt(tool[0]), y= Integer.parseInt(tool[1]);
+			if(id==1)	p[j-1]=new Point(x,9- y);
+			else p[j-1]= new Point(x, y);
+		}
+	}
+	public void updateTurn(String serverString){
+		String [] data= serverString.split("##");
+		turn= Integer.parseInt(data[1]);
+		if(turn==id){
+			frame.setTitle("Your Turn");
+		}
+		else{
+			frame.setTitle("Opponent Turn");
+		}
+		repaint();
+
 	}
 	public void analizeOrg(String serverString){
 		String[]  one_player= serverString.split("Tool");
@@ -173,7 +185,8 @@ public class Board extends JPanel implements MouseListener,WindowListener{
 			return;
 		}
 		if(main.contains(e.getPoint())){
-			client.send("Point##"+(e.getX()-50)/(frame.getWidth()/11)+"##"+(e.getY()-50)/(frame.getHeight()/11)+"##center##"+e.getButton());
+			if(id==0)	client.send("Point##"+(e.getX()-50)/(frame.getWidth()/11)+"##"+(e.getY()-50)/(frame.getHeight()/11)+"##center##"+e.getButton());
+			if(id==1)	client.send("Point##"+(e.getX()-50)/(frame.getWidth()/11)+"##"+(9-(e.getY()-50)/(frame.getHeight()/11))+"##center##"+e.getButton());
 			return;
 		}
 	}
