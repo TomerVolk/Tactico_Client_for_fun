@@ -2,6 +2,8 @@ package client;
 import java.io.*;
 import java.net.*;
 
+import client.Board.Status;
+
 /**
  *the class responsible for server communication
  * @author tomer
@@ -25,7 +27,7 @@ public class Communication implements Runnable {
 	public Communication(Board board){
 		this.board=board;
 		try{ 
-			socket=new Socket("",12345); 
+			socket=new Socket("192.168.1.115",12345); 
 			out=new BufferedWriter(new OutputStreamWriter(socket.getOutputStream()));
 			read=new Thread(this);
 			read.start();
@@ -67,28 +69,56 @@ public class Communication implements Runnable {
 					System.exit(1);
 					return;
 				}
+				if(serverString.startsWith("You")){
+					board.frame.setTitle(serverString);
+					board.endGame(serverString);
+				}
 				if(serverString.startsWith("Wait for start")) {
 					String mar[]=serverString.split("##");
 					board.id=Integer.parseInt(mar[1]);
 					board.frame.setTitle("Waiting for start of the game");
 				}
+				//changes the info bar to show the type pressed
+				if(serverString.startsWith("Mark_org")){
+					board.info.updateMarkOrg(serverString);
+				}
+				//analyzes the initial data coming from the server
 				if(serverString.startsWith("Player")) {
-					System.out.println("id=  "+board.id+" server sent "+serverString);
 					board.analizeData(serverString);
+					board.status=Status.play;
 				}
+				if(serverString.startsWith("flag")){
+					board.status=Status.flag;
+					board.repaint();
+				}
+				//sends the data about the tool placed- index and location
 				if(serverString.startsWith("Org")){
-					System.out.println("id=  "+board.id+" server sent "+serverString);
 					board.analizeOrg(serverString);
+					board.status= Status.org;
 				}
+				//changes the info bar to show the types of the tools who fought
 				if(serverString.startsWith("fight")){
 					board.info.updateFight(serverString);
 				}
+				//marks the tool in the index in the array 
 				if(serverString.startsWith("mark")){
 					board.main.updateMark(serverString);
 				}
+				//changes turn
 				if(serverString.startsWith("turn")){
 					board.updateTurn(serverString);
 				}
+				//adds to the grave yard one of given type
+				if(serverString.startsWith("kill")){
+					board.kill(serverString);
+				}
+				if(serverString.startsWith("move")){
+					board.oneMove(serverString);
+				}
+				if(serverString.startsWith("End")){
+					board.endOrg();
+				}
+				board.repaint();
 
 
 			}

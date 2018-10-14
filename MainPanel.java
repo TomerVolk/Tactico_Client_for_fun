@@ -28,17 +28,21 @@ public class MainPanel extends JPanel{
 	 */
 	public void paintComponent(Graphics g){
 		super.paintComponent(g);
-		if(board.status==Status.opponentWin) {
-			g.setFont(new Font(Font.BOLD+"", Font.BOLD, 200));
-			g.drawString("You \n Lost", 500, 500);
-			return;
-		}
-		if(board.status==Status.youWin) {
-			g.setFont(new Font(Font.BOLD+"", Font.BOLD, 200));
-			g.drawString("You \n Won", 500, 500);
-			return;
-		}
 		g.drawImage(new ImageIcon("pic/board.png").getImage(), 0, 0, this.getWidth(), this.getHeight(),null);
+		for(int i=0;i<40;i++){
+			Point[] myTools=board.me;
+			Point p= myTools[i];
+			if (!myTools[i].equals(new Point(-1,-1))&& i!=mark) {
+				g.drawImage(Board.tool[Board.converter[i]].getImage(), this.getWidth()/10*(int) p.getX(), this.getHeight()/10*(int)p.getY(),  this.getWidth()/10, this.getHeight()/10, null);
+			}
+			if (!myTools[i].equals(new Point(-1,-1))&& i==mark) {
+				g.drawImage(Board.toolRed[Board.converter[i]].getImage(), this.getWidth()/10*(int) p.getX(), this.getHeight()/10*(int)p.getY(),  this.getWidth()/10, this.getHeight()/10, null);
+			}
+		}
+		if(board.status==Status.opponentWin||board.status==Status.youWin){
+			endGame(g);
+			return;
+		}
 		for(int i=0;i<40;i++){
 			Point[] OTools=board.opponent;
 			if (!OTools[i].equals(new Point(-1,-1))) {
@@ -54,17 +58,25 @@ public class MainPanel extends JPanel{
 			g.drawLine(this.getWidth()/10*i, 0, this.getWidth()/10*i, this.getHeight());
 			g.drawLine(0, this.getHeight()/10*i, this.getWidth(), this.getHeight()*i/10);
 		}
+		
+		
+	}
+	public void endGame(Graphics g){
 		for(int i=0;i<40;i++){
-			Point[] myTools=board.me;
-			Point p= myTools[i];
-			if (!myTools[i].equals(new Point(-1,-1))&& i!=mark) {
-				g.drawImage(Board.tool[Board.converter[i]].getImage(), this.getWidth()/10*(int) p.getX(), this.getHeight()/10*(int)p.getY(),  this.getWidth()/10, this.getHeight()/10, null);
-			}
-			if (!myTools[i].equals(new Point(-1,-1))&& i==mark) {
+			Point[] opTools=board.opponent;
+			Point p= opTools[i];
+			if (!opTools[i].equals(new Point(-1,-1))) {
 				g.drawImage(Board.toolRed[Board.converter[i]].getImage(), this.getWidth()/10*(int) p.getX(), this.getHeight()/10*(int)p.getY(),  this.getWidth()/10, this.getHeight()/10, null);
 			}
 		}
-		
+		if(board.status==Status.opponentWin) {
+			g.setFont(new Font(Font.BOLD+"", Font.BOLD, 100));
+			g.drawString("You Lost", 200, 450);
+		}
+		if(board.status==Status.youWin) {
+			g.setFont(new Font(Font.BOLD+"", Font.BOLD, 100));
+			g.drawString("You Won", 200, 450);
+		}
 	}
 	public void updateMark(String serverString){
 		String [] data= serverString.split("##");

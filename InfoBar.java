@@ -40,19 +40,27 @@ public class InfoBar extends JPanel{
 		super.paintComponent(g);
 		g.setFont(new Font(Font.SANS_SERIF, Font.BOLD, 30));
 		if(b.status== Status.flag) g.drawString("place your flag", 10, 40);
-		if(b.status== Status.org) g.drawString("organize your tools, you clicked on "+mark, 10, 40);
+		if(b.status== Status.org&&mark!=-1){
+			if(mark!=0)		g.drawString("organize your tools, you clicked on "+mark, 10, 40);
+			else		g.drawString("organize your tools, you clicked on a bomb", 10, 40);
+		}
 		if(YourFight==-1||OpponentFight==-1) return;
 		g.drawString("Your Tool was: "+YourFight, 50, 45);
 		g.drawString("Opponent Tool was: "+OpponentFight, 500, 45);
 	}
 	public void updateFight(String serverString){
-		System.out.println(serverString);
 		String [] fight= serverString.split("##");
 		YourFight= Integer.parseInt(fight[1]);
 		OpponentFight= Integer.parseInt(fight[2]);
 		YourFight= Board.converter[YourFight];
 		OpponentFight= Board.converter[OpponentFight];
 		repaint();
+	}
+	public void updateMarkOrg(String serverString) {
+		String[] data= serverString.split("##");
+		mark= Integer.parseInt(data[1]);
+		this.repaint();
+		
 	}
 		
 }

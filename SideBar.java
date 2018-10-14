@@ -8,10 +8,7 @@ import javax.swing.*;
  */
 public class SideBar extends JPanel{
 	private static final long serialVersionUID = 1L;
-	/**
-	 * the board of the game- the main frame
-	 */
-	private Board b;
+	private int[] dead;
 	/**
 	 * Determines whether it's this player grave- yard or the other
 	 */
@@ -22,41 +19,41 @@ public class SideBar extends JPanel{
 	 * @param isMe determines whether it's this player's or opponent's grave- yard
 	 */
 	public SideBar(Board b, boolean isMe){
-		this.b=b;
 		this.setPreferredSize(new Dimension(50,b.frame.getHeight()-50));
 		this.isMe=isMe;
 		if(isMe)	this.setBackground(Color.BLUE);
 		else	this.setBackground(Color.RED);
+		dead=new int[11];
+		for(int i=0;i<11;i++){
+			dead[i]=0;
+		}
 	}
 	/**
 	 * the function that draws the Bar
 	 */
 	public void paintComponent(Graphics g){
 		super.paintComponent(g);
-		Point[] tool;
 		if(isMe) {
 			g.setColor(Color.blue);
-			tool=b.me;
 		}
 		else {
 			g.setColor(Color.red);
-			tool=b.opponent;
 		}
 		g.setFont(new Font(null, 0, 25));
-		int[] dead= deadOfType(tool);
 		for(int i=0;i<11;i++){
 			g.drawImage(Board.tool[i].getImage(), 0, this.getHeight()/11*i,  this.getWidth(), this.getHeight()/11, null);
 			g.drawString(dead[i]+"", 30, this.getHeight()/11*(i+1)-15);
 			g.drawLine(0, this.getHeight()/11*(i+1), this.getWidth(),  this.getHeight()/11*(i+1));
 		}
 	}
-	public int[] deadOfType(Point[] player){
-		int[] ans=new int[11];
-		for(int i=1;i<40;i++){
-			if(!player[i].equals(new Point(-1,-1))){
-				ans[Board.converter[i]]++;
-			}
-		}
-		return ans;
+	public void updateDead(int type){
+		if(type>10) return;
+		dead[type]++;
+		repaint();
+	}
+	public void unkill(int type){
+		if(type>10) return;
+		dead[type]--;
+		repaint();
 	}
 }

@@ -77,14 +77,12 @@ public class Board extends JPanel implements MouseListener,WindowListener{
 		this.setLayout(layout);
 		main=new MainPanel(this);
 		this.add(main, BorderLayout.CENTER);
-		if(status!=Status.opponentWin&&status!=Status.youWin) {
-			info=new InfoBar(this);
-			this.add(info, BorderLayout.NORTH);
-			rightBar=new SideBar(this, true);
-			this.add(rightBar, BorderLayout.WEST);
-			leftBar=new SideBar(this, false);
-			this.add(leftBar, BorderLayout.EAST);
-		}
+		info=new InfoBar(this);
+		this.add(info, BorderLayout.NORTH);
+		rightBar=new SideBar(this, true);
+		this.add(rightBar, BorderLayout.WEST);
+		leftBar=new SideBar(this, false);
+		this.add(leftBar, BorderLayout.EAST);
 		for(int i=0;i<12;i++){
 			tool[i]=new ImageIcon("pic/"+i+".PNG");
 			toolRed[i]=new ImageIcon("pic/"+i+"_1.PNG");
@@ -141,10 +139,15 @@ public class Board extends JPanel implements MouseListener,WindowListener{
 		}
 		repaint();
 	}
+	public void endOrg(){
+		int endOrg=JOptionPane.showConfirmDialog(frame, "would you like to start the game?","End of organization", JOptionPane.YES_NO_OPTION);
+		if(endOrg== JOptionPane.YES_OPTION){
+			client.send("End Org");
+		}
+	}
 	private void updatePlayer(String player, Point[] p){
 		String[] one_player= player.split("Tool");
 		for(int j=1;j<one_player.length&&j<41;j++){
-			System.out.println(one_player[j]);
 			String tool[]= one_player[j].split("##");
 			int x= Integer.parseInt(tool[0]), y= Integer.parseInt(tool[1]);
 			if(id==1)	p[j-1]=new Point(x,9- y);
@@ -163,14 +166,48 @@ public class Board extends JPanel implements MouseListener,WindowListener{
 		repaint();
 
 	}
-	public void analizeOrg(String serverString){
-		String[]  one_player= serverString.split("Tool");
-		for(int j=1;j<one_player.length&&j<41;j++){
-			String tool[]= one_player[j].split("##");
-			int x= Integer.parseInt(tool[0]), y= Integer.parseInt(tool[1]);
-			me[j-1]=new Point(x, y);
+	public void oneMove(String serverString) {
+		String[] data=serverString.split("##");
+		int x0=Integer.parseInt(data[1]), y0=Integer.parseInt(data[2]), x1=Integer.parseInt(data[3]),y1=Integer.parseInt(data[4]);
+		for(int i=0;i<40;i++){
+			if(me[i].equals(new Point(x0,y0))){
+				me[i]=new Point(x1, y1);
+				return;
+			}
+			if(opponent[i].equals(new Point(x0,y0))){
+				opponent[i]=new Point(x1, y1);
+				return;
+			}
 		}
+	}
+	public void analizeOrg(String serverString){
+		String [] data=serverString.split("##");
+		int i=Integer.parseInt(data[1]), x=Integer.parseInt(data[2]), y=Integer.parseInt(data[3]);
+		me[i]=new Point(x, y);
+		rightBar.unkill(converter[i]);
 		repaint();
+	}
+	public void kill(String serverString){
+		String data[]=serverString.split("##");
+		int type= Integer.parseInt(data[2]);
+		if(data[1].startsWith("m")){
+			rightBar.updateDead(type);
+			return;
+		}
+		if(data[1].startsWith("o")){
+			leftBar.updateDead(type);
+			return;
+		}
+	}
+	public void endGame(String serverString){
+		main.mark=-1;
+		if(serverString.toUpperCase().contains("W")){
+			status=Status.youWin;
+		}
+		else{
+			status=Status.opponentWin;
+		}
+		main.repaint();
 	}
 
 	/**
@@ -181,7 +218,7 @@ public class Board extends JPanel implements MouseListener,WindowListener{
 			return;
 		}
 		if(e.getX()< leftBar.getWidth()){
-			client.send("Point##"+e.getX()+"##"+ e.getY()/(frame.getHeight()/11)+"##left##"+e.getButton());
+			client.send("Point##"+e.getX()+"##"+ (e.getY()-50)/(frame.getHeight()/11)+"##left##"+e.getButton());
 			return;
 		}
 		if(main.contains(e.getPoint())){
